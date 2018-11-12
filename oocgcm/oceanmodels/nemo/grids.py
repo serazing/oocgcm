@@ -85,45 +85,22 @@ class variables_holder_for_2d_grid_from_nemo_ogcm:
                                   chunks=self.chunks,grid_location='t')
 
     def _define_horizontal_metrics(self):
-        self.variables["cell_x_size_at_t_location"] = \
-                        self._get(self.coordinate_file,"e1t",
-                                  chunks=self.chunks,grid_location='t')
-        self.variables["cell_y_size_at_t_location"] = \
-                        self._get(self.coordinate_file,"e2t",
-                                  chunks=self.chunks,grid_location='t')
-        self.variables["cell_x_size_at_u_location"] = \
-                        self._get(self.coordinate_file,"e1u",
-                                  chunks=self.chunks,grid_location='u')
-        self.variables["cell_y_size_at_u_location"] = \
-                        self._get(self.coordinate_file,"e2u",
-                                  chunks=self.chunks,grid_location='u')
-        self.variables["cell_x_size_at_v_location"] = \
-                        self._get(self.coordinate_file,"e1v",
-                                  chunks=self.chunks,grid_location='v')
-        self.variables["cell_y_size_at_v_location"] = \
-                        self._get(self.coordinate_file,"e2v",
-                                  chunks=self.chunks,grid_location='v')
-        self.variables["cell_x_size_at_f_location"] = \
-                        self._get(self.coordinate_file,"e1f",
-                                  chunks=self.chunks,grid_location='f')
-        self.variables["cell_y_size_at_f_location"] = \
-                        self._get(self.coordinate_file,"e2f",
-                                  chunks=self.chunks,grid_location='f')
+        for grid in ['t', 'u', 'v', 'f']:
+            dx = self._get(self.coordinate_file, "e1%s" %grid,
+                           chunks=self.chunks, grid_location=grid)
+            dy = self._get(self.coordinate_file, "e2%s" %grid,
+                           chunks=self.chunks, grid_location=grid)
+            self.variables["cell_x_size_at_%s_location" %grid] = dx
+            self.variables["cell_y_size_at_%s_location" %grid] = dy
+            self.variables["cell_area_at_%s_location" %grid] = dx * dy
 
     def _define_masks(self):
         jk = self.byte_mask_level
-        self.variables["sea_binary_mask_at_t_location"] = \
-                     self._get(self.byte_mask_file,"tmask",
-                            chunks=self.chunks,grid_location='t')[...,jk,:,:]
-        self.variables["sea_binary_mask_at_u_location"] = \
-                     self._get(self.byte_mask_file,"umask",
-                            chunks=self.chunks,grid_location='u')[...,jk,:,:]
-        self.variables["sea_binary_mask_at_v_location"] = \
-                     self._get(self.byte_mask_file,"vmask",
-                            chunks=self.chunks,grid_location='v')[...,jk,:,:]
-        self.variables["sea_binary_mask_at_f_location"] = \
-                     self._get(self.byte_mask_file,"vmask",
-                            chunks=self.chunks,grid_location='f')[...,jk,:,:]
+        for grid in ['t', 'u', 'v', 'f']:
+            mask = self._get(self.byte_mask_file, "%smask" %grid,
+                             chunks=self.chunks,
+                             grid_location=grid)[...,jk,:,:]
+            self.variables["sea_binary_mask_at_%s_location" %grid] = mask
 
     def chunk(self,chunks=None):
         """Chunk all the variables.
