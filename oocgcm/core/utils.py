@@ -173,12 +173,12 @@ def _grid_location_equals(xarr,grid_location=None):
 
     """
     test = True
-    if xarr.attrs.has_key('grid_location'):
+    if 'grid_location' in xarr.attrs:
         test *= (xarr.attrs['grid_location']==grid_location)
     return test
 
 
-def _chunks_are_compatible(chunks1=None,chunks2=None,ndims=None):
+def _chunks_are_compatible(chunks1=None, chunks2=None, ndims=None):
     """Return True when two chunks are aligned over their common dimensions.
 
     Parameters
@@ -208,7 +208,7 @@ def _chunks_are_compatible(chunks1=None,chunks2=None,ndims=None):
         test *= chunks1[-idim-1] == chunks2[-idim-1]
     return test
 
-def _assert_are_compatible_dataarrays(array1,array2):
+def _assert_are_compatible_dataarrays(array1, array2):
     """Assert whether two arrays are dataarray with similar dimensions, shapes
     and dask chunk (if relevant).
 
@@ -243,7 +243,7 @@ def _assert_and_set_grid_location_attribute(xarr,grid_location=None):
     grid_location : str
         string describing the grid location : eg 'u','v','t','f'...
     """
-    if xarr.attrs.has_key('grid_location'):
+    if 'grid_location' in xarr.attrs:
         assert ( xarr.attrs['grid_location'] == grid_location )
     else:
         xarr.attrs['grid_location'] = grid_location
@@ -279,9 +279,9 @@ def check_input_array(xarr,shape=None,chunks=None,\
        arrayname = 'array'
     if not(is_xarray(xarr)):
         raise TypeError(arrayname + 'is expected to be a xarray.DataArray')
-    if not(_chunks_are_compatible(xarr.chunks,chunks,ndims=ndims)):
-        raise ChunkError()
-    if not(_grid_location_equals(xarr,grid_location)):
+    #if not(_chunks_are_compatible(xarr.chunks, chunks, ndims=ndims)):
+    #    raise ChunkError()
+    if not(_grid_location_equals(xarr, grid_location)):
         raise GridLocationError()
     return True
 
